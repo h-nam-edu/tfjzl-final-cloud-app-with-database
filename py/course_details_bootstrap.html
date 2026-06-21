@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ course.name }} - Course Details</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
+        <!-- Course Detail Header -->
         <div class="jumbotron">
             <h1 class="display-4">{{ course.name }}</h1>
             <p class="lead">{{ course.description }}</p>
         </div>
 
+        <!-- Lessons Section -->
         <h3 class="mb-4">Course Lessons</h3>
         <div class="accordion" id="lessonAccordion">
             {% for lesson in course.lesson_set.all %}
@@ -38,11 +41,13 @@
             {% endfor %}
         </div>
 
+        <!-- Take Exam Button - Updated URL with dummy course_id for demo -->
         <div class="mt-4">
             <a href="{% url 'submit' course.id %}" class="btn btn-success btn-lg">Take Exam</a>
         </div>
     </div>
 
+    <!-- Bootstrap JS Dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
