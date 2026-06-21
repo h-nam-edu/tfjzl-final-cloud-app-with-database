@@ -1,4 +1,4 @@
-curl --request DELETE 'http://localhost:5000/customer/auth/review/1' \
+curl -s -X DELETE 'http://localhost:5000/customer/auth/review/1' \
 --header 'Authorization: Bearer YOUR_JWT_TOKEN'
 
-Review for the book with ISBN 1 deleted successfully.
+{"message": "Review for the book with ISBN 1 deleted successfully."}

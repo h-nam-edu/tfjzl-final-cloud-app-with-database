@@ -1,6 +1,6 @@
-curl --request PUT 'http://localhost:5000/customer/auth/review/1' \
+curl -s -X PUT 'http://localhost:5000/customer/auth/review/1' \
 --header 'Authorization: Bearer YOUR_JWT_TOKEN' \
 --header 'Content-Type: application/json' \
 --data-raw '{"review": "Amazing book!"}'
 
-The review for the book with ISBN 1 has been added/updated.
+{"message": "The review for the book with ISBN 1 has been added/updated.", "reviews": {"testuser": "Amazing book!"}}

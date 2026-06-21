@@ -14,61 +14,83 @@ public_users.post("/register", (req,res) => {
       users.push({"username":username,"password":password});
       return res.status(200).json({message: "Customer successfully registered. Now you can login"});
     } else {
-      return res.status(404).json({message: "User already exists!"});    
+      return res.status(409).json({message: "User already exists!"});    
     }
   } 
-  return res.status(404).json({message: "Unable to register user."});
+  return res.status(400).json({message: "Unable to register user."});
 });
 
-// Get the book list available in the shop
+// Get the book list available in the shop using Promises
 public_users.get('/', function (req, res) {
-  res.send(JSON.stringify(books, null, 4));
+  new Promise((resolve, reject) => {
+      resolve(books);
+  })
+  .then((data) => res.status(200).json(data))
+  .catch((err) => res.status(500).json({message: "Error fetching books"}));
 });
 
-// Get book details based on ISBN
+// Get book details based on ISBN using Promises
 public_users.get('/isbn/:isbn', function (req, res) {
   const isbn = req.params.isbn;
-  res.send(books[isbn]);
+  new Promise((resolve, reject) => {
+      if (books[isbn]) {
+          resolve(books[isbn]);
+      } else {
+          reject("Book not found");
+      }
+  })
+  .then((data) => res.status(200).json(data))
+  .catch((err) => res.status(404).json({message: err}));
 });
   
-// Get book details based on author
+// Get book details based on author using Promises
 public_users.get('/author/:author', function (req, res) {
   const author = req.params.author;
-  let output = [];
-  for (var isbn in books) {
-    if (books[isbn].author === author) {
-      output.push({
-        "isbn": isbn,
-        "author": books[isbn].author,
-        "title": books[isbn].title,
-        "reviews": books[isbn].reviews
-      });
-    }
-  }
-  res.send(output);
+  new Promise((resolve, reject) => {
+      let output = [];
+      for (var isbn in books) {
+          if (books[isbn].author === author) {
+              output.push({ "isbn": isbn, ...books[isbn] });
+          }
+      }
+      if (output.length > 0) {
+          resolve(output);
+      } else {
+          reject("Author not found");
+      }
+  })
+  .then((data) => res.status(200).json(data))
+  .catch((err) => res.status(404).json({message: err}));
 });
 
-// Get all books based on title
+// Get all books based on title using Promises
 public_users.get('/title/:title', function (req, res) {
   const title = req.params.title;
-  let output = [];
-  for (var isbn in books) {
-    if (books[isbn].title === title) {
-      output.push({
-        "isbn": isbn,
-        "author": books[isbn].author,
-        "title": books[isbn].title,
-        "reviews": books[isbn].reviews
-      });
-    }
-  }
-  res.send(output);
+  new Promise((resolve, reject) => {
+      let output = [];
+      for (var isbn in books) {
+          if (books[isbn].title === title) {
+              output.push({ "isbn": isbn, ...books[isbn] });
+          }
+      }
+      if (output.length > 0) {
+          resolve(output);
+      } else {
+          reject("Title not found");
+      }
+  })
+  .then((data) => res.status(200).json(data))
+  .catch((err) => res.status(404).json({message: err}));
 });
 
-//  Get book review
+// Get book review
 public_users.get('/review/:isbn', function (req, res) {
   const isbn = req.params.isbn;
-  res.send(books[isbn].reviews);
+  if (books[isbn]) {
+      res.status(200).json({reviews: books[isbn].reviews});
+  } else {
+      res.status(404).json({message: "Book not found"});
+  }
 });
 
 /* ==========================================================
@@ -80,7 +102,7 @@ const getAllBooksAsync = async () => {
         const response = await axios.get('http://localhost:5000/');
         console.log(response.data);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching books:", error.message);
     }
 };
 
@@ -90,7 +112,7 @@ const getBookByIsbnPromise = (isbn) => {
             console.log(response.data);
         })
         .catch(error => {
-            console.error(error);
+            console.error("Error fetching book by ISBN:", error.message);
         });
 };
 
@@ -99,7 +121,7 @@ const getBookByAuthorAsync = async (author) => {
         const response = await axios.get(`http://localhost:5000/author/${author}`);
         console.log(response.data);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching book by author:", error.message);
     }
 };
 
@@ -108,7 +130,7 @@ const getBookByTitleAsync = async (title) => {
         const response = await axios.get(`http://localhost:5000/title/${title}`);
         console.log(response.data);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching book by title:", error.message);
     }
 };
 
